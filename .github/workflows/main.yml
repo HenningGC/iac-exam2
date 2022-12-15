@@ -1,0 +1,31 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Build steps here
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+  
+      - uses: actions/azure-login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          tenantId: 5ca2bc70-353c-4d1f-b7d7-7f2b2259df68
+          clientId: 717f47e0-ae85-4126-ba09-f89715ce00e2
+          clientSecret: J4g8Q~99jMKO9KB5QINkwFTiJncxYYfU_TDj6akE
+      - run: |
+          az deployment group create \
+            --name my-deployment \
+            --resource-group my-resource-group \
+            --template-file template.json \
+            --parameters parameter.json \
+            --parameters MYSECRET="${{ secrets.MYSECRET }}"
